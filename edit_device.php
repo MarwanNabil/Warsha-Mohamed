@@ -1,0 +1,137 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['username']) || $_SESSION['role'] != 'A') {
+    header('Location: index.php');
+    exit();
+}
+
+require "./app/db_connection.php";
+
+
+$history_id = $_GET['history_id'];
+
+$query = "SELECT * FROM device_history dh
+INNER JOIN department_list dep_list ON dh.department_id = dep_list.id
+INNER JOIN devices d ON dh.serial_number = d.serial_number
+INNER JOIN devices_list dev_list ON dev_list.id = d.device_id
+ WHERE history_id = $history_id";
+$stmt = $conn->prepare($query);
+
+$stmt->execute();
+$result = $stmt->get_result();
+$device = $result->fetch_assoc();
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // استلام البيانات من النموذج
+    $entry_date = $_POST['entry_date'] ?? null;
+    $fix_date = $_POST['fix_date'] ?? null;
+    $fault_type = $_POST['fault_type'] ?? null;
+    $exit_date = $_POST['exit_date'] ?? null;
+    $who_fixed = $_POST['who_fixed'] ?? null;
+    $operation_permission = $_POST['operation_permission'] ?? null;
+    $department_id = $_POST['department_id'] ?? null;
+    $tools_used = $_POST['tools_used'] ?? null;
+
+
+    // تحديث البيانات في جدول device_history
+    $update_query = "UPDATE device_history 
+                     SET entry_date = ?, fix_date = ?, fault_type = ?, exit_date = ?, who_fixed = ?, operation_permission = ?, department_id = ?, tools_used = ?
+                     WHERE history_id = ? ";
+    $stmt = $conn->prepare($update_query);
+    $stmt->bind_param('sssssssss', $entry_date, $fix_date, $fault_type, $exit_date, $who_fixed, $operation_permission, $department_id, $tools_used, $history_id);
+    $stmt->execute();
+
+    // إعادة التوجيه إلى صفحة الأجهزة بعد التعديل
+    header('Location: all_devices.php');
+    exit();
+}
+
+?>
+
+<?php include "partials/header.php"; ?>
+<?php include "partials/navBar.php"; ?>
+
+<div class="container mt-5" dir="rtl">
+    <h3>تعديل بيانات الجهاز</h3>
+
+    <form method="POST" action="">
+        <div class="form-group">
+            <label for="device_name">اسم الجهاز</label>
+            <select class="form-select" id="device_id" name="device_id" required>
+                <?php
+                // جلب أسماء الأجهزة من قاعدة البيانات
+                $query = "SELECT id, device_name FROM devices_list";
+                $result = $conn->query($query);
+                while ($row = $result->fetch_assoc()) {
+                    // تحديد الخيار إذا كانت القيمة مطابقة
+                    $selected = ($row['id'] == $device['device_id']) ? "selected" : "";
+                    echo "<option value='" . $row['id'] . "' $selected>" . htmlspecialchars($row['device_name']) . "</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="serial_number">رقم المسلسل</label>
+            <input disabled type="text" name="serial_number" id="serial_number" class="form-control" value="<?php echo htmlspecialchars($device['serial_number']); ?>">
+        </div>
+
+        <div class="form-group">
+            <label for="entry_date">تاريخ الدخول</label>
+            <input type="date" name="entry_date" id="entry_date" class="form-control" value="<?php echo !empty($device['entry_date']) ? htmlspecialchars(date('Y-m-d', strtotime($device['entry_date']))) : ''; ?>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fix_date">تاريخ التصليح</label>
+            <input disabled type="date" name="fix_date" id="fix_date" class="form-control" value="<?php echo !empty($device['fix_date']) ? htmlspecialchars(date('Y-m-d', strtotime($device['fix_date']))) : ''; ?>">
+        </div>
+
+        <div class="form-group">
+            <label for="exit_date">تاريخ الخروج</label>
+            <input disabled type="date" name="exit_date" id="exit_date" class="form-control" value="<?php echo !empty($device['exit_date']) ? htmlspecialchars(date('Y-m-d', strtotime($device['exit_date']))) : ''; ?>">
+        </div>
+
+        <div class="form-group">
+            <label for="who_fixed">من قام بالتصليح</label>
+            <input disabled type="text" name="who_fixed" id="who_fixed" class="form-control" value="<?php echo htmlspecialchars($device['who_fixed']); ?>">
+        </div>
+
+        <div class="form-group">
+            <label for="operation_permission">رقم اذن الشغل</label>
+            <input type="text" name="operation_permission" id="operation_permission" class="form-control" value="<?php echo htmlspecialchars($device['operation_permission']); ?>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="department_id">القسم المختص</label>
+            <select class="form-select" id="department_id" name="department_id" required>
+                <?php
+                // جلب أسماء الأقسام من قاعدة البيانات
+                $query = "SELECT id, department_name FROM department_list";
+                $result = $conn->query($query);
+                while ($row = $result->fetch_assoc()) {
+                    // تحديد الخيار إذا كانت القيمة مطابقة
+                    $selected = ($row['id'] == $device['department_id']) ? "selected" : "";
+                    echo "<option value='" . $row['id'] . "' $selected>" . htmlspecialchars($row['department_name']) . "</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fault_type">نوع العطل</label>
+            <input disabled type="text" name="fault_type" id="fault_type" class="form-control" value="<?php echo htmlspecialchars($device['fault_type']); ?>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="tools_used">الأدوات المستخدمة</label>
+            <input disabled type="text" name="tools_used" id="tools_used" class="form-control" value="<?php echo htmlspecialchars($device['tools_used']); ?>" required>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">تحديث</button>
+    </form>
+
+</div>
+
+<?php include "partials/footer.php"; ?>

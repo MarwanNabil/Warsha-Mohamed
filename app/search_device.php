@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'B') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] != 'tasle7') {
     header('Location: index.php');
     exit();
 }
@@ -10,6 +10,7 @@ require "db_connection.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $search_input = $conn->real_escape_string($_POST['search_input']); // Prevent SQL injection
+    $current_logged_in_user_department_id = $_SESSION['department_id'];
 
     // Query to get device details and its history by serial number or operation permission
     $query = "SELECT *
@@ -19,7 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               INNER JOIN divisions dv ON dv.id = r.division_id
               INNER JOIN device_history dh ON d.serial_number = dh.serial_number
               INNER JOIN devices_list dl ON dl.id = d.device_id
-              WHERE d.serial_number = '$search_input' OR dh.operation_permission = '$search_input'
+              INNER JOIN department_list dep_lis ON dh.department_id = dep_lis.id 
+              WHERE (d.serial_number = '$search_input' OR dh.operation_permission = '$search_input') AND dh.department_id = '$current_logged_in_user_department_id'
               ORDER BY dh.history_id DESC
               LIMIT 1";
 
@@ -31,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $typeDevice = $device['serial_number_type'] === "factory" ? "مصنع" : "يدوي";
 
         echo "اسم الجهاز: " . htmlspecialchars($device['device_name']) . "<br>";
+        echo "اسم القسم المختص: " . htmlspecialchars($device['department_name']) . "<br>";
         echo "رقم المسلسل: " . htmlspecialchars($device['serial_number']) . "<br>";
         echo "رقم اذن الشغل: " . htmlspecialchars($device['operation_permission']) . "<br>";
         echo "نوع رقم المسلسل: " . htmlspecialchars($typeDevice) . "<br>";

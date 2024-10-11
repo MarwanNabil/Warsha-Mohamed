@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'A') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] != 'egra2at') {
     header('Location: index.php');
     exit();
 }
@@ -102,6 +102,8 @@ include "partials/navBar.php";
                                 <th>من قام بالتصليح</th>
                                 <th>رقم أذن الشغل</th>
                                 <th>تاريخ الخروج</th>
+                                <th>تم المراجعة من قبل</th>
+                                <th>الموافقة على التصليح</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -114,6 +116,8 @@ include "partials/navBar.php";
                                     <td><?php echo htmlspecialchars($history['who_fixed']); ?></td>
                                     <td><?php echo htmlspecialchars($history['operation_permission']); ?></td>
                                     <td><?php echo htmlspecialchars($history['exit_date'] ?? 'غير متوفر'); ?></td>
+                                    <td><?php echo htmlspecialchars($history['reviewed_by']); ?></td>
+                                    <td><?php echo htmlspecialchars($history['is_approved'] ? 'صالح' : 'غير صالح'); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -157,12 +161,16 @@ include "partials/navBar.php";
                         <input type="date" class="form-control" id="exit_date" name="exit_date" required>
                     </div>
                     <input type="hidden" id="serial_number" value="<?php echo isset($device) ? htmlspecialchars($device['serial_number']) : ''; ?>">
-                    <button type="submit" class="btn btn-success">حفظ <i class="bi bi-floppy"></i></button>
+                    <button type="submit" class="btn btn-success"
+                        <?php echo !$device['is_approved'] ? 'disabled' : ''; ?>>
+                        حفظ <i class="bi bi-floppy"></i>
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
     document.getElementById('exitForm').addEventListener('submit', function(event) {

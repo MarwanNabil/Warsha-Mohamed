@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-// Allow multiple roles: 'A', 'B', and 'C'
-$allowed_roles = ['A', 'B', 'C'];
+// Allow multiple roles: 'egra2at', 'tasle7', and 'C'
+$allowed_roles = ['egra2at', 'tasle7', 'C'];
 if (!isset($_SESSION['username']) || !in_array($_SESSION['role'], $allowed_roles)) {
     header('Location: index.php');
     exit();

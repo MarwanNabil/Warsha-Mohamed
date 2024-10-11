@@ -2,7 +2,7 @@
 session_start();
 
 
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'A') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] != 'egra2at') {
     header('Location: index.php');
     exit();
 }
@@ -164,11 +164,11 @@ include "partials/navBar.php";
                     ?>
                 </select>
             </div>
-            <div class=" col-lg-2 col-md-12 mt-4">
+            <!-- <div class=" col-lg-2 col-md-12 mt-4">
                 <a class="btn btn-primary" type="button" href='add_department.php'>
                     إضافة قسم <i class="bi bi-plus-square"></i>
                 </a>
-            </div>
+            </div> -->
         </div>
 
         <div class="mb-3">

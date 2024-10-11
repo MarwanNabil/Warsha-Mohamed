@@ -7,14 +7,14 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
 
-        <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item fs-5">
                     <a class="nav-link"><i class="bi bi-person-circle"></i> مستخدم رقم : <?php echo $_SESSION['username']; ?></a>
                 </li>
             </ul>
 
             <ul class="navbar-nav me-auto">
-                <?php if ($_SESSION['role'] == 'A') { ?>
+                <?php if ($_SESSION['role'] == 'egra2at') { ?>
                     <li class="nav-item p-2">
                         <a class="nav-link btn btn-primary text-white me-2" href="reception.php">استلام جهاز <i class="bi bi-file-arrow-down"></i></a>
                     </li>
@@ -22,7 +22,7 @@
                         <a class="nav-link btn btn-success text-white" href="search-device.php">بحث عن جهاز <i class="bi bi-search"></i></a>
                     </li>
 
-                <?php } elseif ($_SESSION['role'] == 'B') { ?>
+                <?php } elseif ($_SESSION['role'] == 'tasle7') { ?>
                     <li class="nav-item">
                         <a class="nav-link mt-2">تصليح جهاز</a>
                     </li>
@@ -35,7 +35,7 @@
             </ul>
 
 
-            
+
         </div>
     </div>
 </nav>

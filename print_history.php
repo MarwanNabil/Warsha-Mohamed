@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username']) || $_SESSION['role'] != 'A') {
+if (!isset($_SESSION['username']) || $_SESSION['role'] != 'egra2at') {
     header('Location: index.php');
     exit();
 }
@@ -93,6 +93,8 @@ if (empty($history)) {
                 <th>نوع العطل</th>
                 <th>قطع الغيار المستخدمة</th>
                 <th>من قام بالتصليح</th>
+                <th>الموافقة على التصليح</th>
+                <th>القائم بالاختبار</th>
                 <th>تاريخ الخروج</th>
             </tr>
         </thead>
@@ -105,6 +107,8 @@ if (empty($history)) {
                     <td><?php echo htmlspecialchars($device['fault_type']); ?></td>
                     <td><?php echo htmlspecialchars($device['tools_used']); ?></td>
                     <td><?php echo htmlspecialchars($device['who_fixed']); ?></td>
+                    <td><?php echo htmlspecialchars($device['is_approved'] ? 'صالح' : 'غير صالح'); ?></td>
+                    <td><?php echo htmlspecialchars($device['reviewed_by']); ?></td>
                     <td><?php echo htmlspecialchars($device['exit_date']); ?></td>
                 </tr>
             <?php endforeach; ?>

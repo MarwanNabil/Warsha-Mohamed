@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //serial number is considered either serial_number or operation_permission
     $result = $conn->query("SELECT * FROM device_history WHERE serial_number = '$serial_number' OR operation_permission = '$serial_number' ORDER BY history_id DESC LIMIT 1");
     $row = $result->fetch_assoc();
-    $message = $row;
+
     $triggered_history_id = $row['history_id'];
 
     // Prepare the SQL statement to insert into device_history
